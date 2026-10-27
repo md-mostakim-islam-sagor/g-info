@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    // All writes happen on the server via Admin SDK (bypasses rules). Clients can never write balances, prices, roles or payment status.
+    match /users/{uid} { allow read: if request.auth != null && request.auth.uid == uid; allow write: if false; }
+    match /orders/{id} { allow read: if request.auth != null && resource.data.uid == request.auth.uid; allow write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
